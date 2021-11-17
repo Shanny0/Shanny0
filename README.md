@@ -18,7 +18,7 @@
 
 ### Whats Next:
 
-- Whats next....,
+- Whats next.... Improving my skills.
 
 
 [linkedin]: https://www.linkedin.com/in/raja-zeeshan-ali/
