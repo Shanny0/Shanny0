@@ -7,7 +7,7 @@
 - 🐛 I’m currently fighting with bugs in my code...😆
 - 🧑‍💼 Also looking for a job..
 - 🥅 2022 Goals: Be more skilled then now
-- 🎥 Fun fact: I love to Marvel movies, my favourite character is Doc.Strange
+- 🎥 Fun fact: I love to Marvel movies...
 
 ### Connect with me:
 
@@ -18,7 +18,7 @@
 
 ### Whats Next:
 
-- Whats next?...Just time will tell.
+- Whats next....,
 
 
 [linkedin]: https://www.linkedin.com/in/raja-zeeshan-ali/
