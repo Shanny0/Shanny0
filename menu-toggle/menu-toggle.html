@@ -1,13 +1,14 @@
 <!--
-  Burger -> X menu toggle. Paste the whole thing into a Webflow Embed (or any HTML page).
+  Burger -> X menu toggle. Paste the whole thing into a Webflow Embed, inside the Navbar's
+  menu button (Navbar > Menu Button). It works anywhere else too.
 
-  - The button drives itself: clicking it toggles .is-open and keeps aria-expanded in sync.
-  - If it sits inside Webflow's built-in Navbar menu button, it also follows that button's
-    own .w--open class, so the icon stays right even when Webflow opens the menu.
-  - Point it at your own menu with data-burger-target="#nav" to get .is-open on that too,
-    or listen for the burger:toggle event.
+  Inside a Webflow Navbar it makes itself passive: Webflow keeps handling the click, and the
+  icon just mirrors the navbar's open state, so the two never fight over it. On a plain page
+  it drives itself instead, toggling .is-open and keeping aria-expanded in sync.
 
   Restyle with the custom properties on .burger: --size, --color, --speed.
+  The second <style> block at the bottom is the navbar layout - delete it if you don't
+  want it.
 -->
 <style>
   .burger {
@@ -18,7 +19,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 8px;
+    padding: 0;
     border: 0;
     background: none;
     cursor: pointer;
@@ -32,6 +33,8 @@
     outline-offset: 4px;
     border-radius: 6px;
   }
+  /* inside Webflow's menu button the click belongs to Webflow, so let it pass through */
+  .burger.is-passive { pointer-events: none; cursor: inherit; }
   .burger svg { width: var(--size); height: auto; display: block; overflow: visible; }
   .burger svg path {
     fill: var(--color);
@@ -47,19 +50,13 @@
   .burger .base  { transition-delay: 0ms; }
 
   /* opening: the filling shoots out first, then the buns cross */
-  .burger.is-open .patty,
-  .w--open .burger .patty { transition-delay: 0ms; }
+  .burger.is-open .patty { transition-delay: 0ms; }
   .burger.is-open .bun,
-  .burger.is-open .base,
-  .w--open .burger .bun,
-  .w--open .burger .base { transition-delay: 70ms; }
+  .burger.is-open .base  { transition-delay: 70ms; }
 
-  .burger.is-open .bun,
-  .w--open .burger .bun   { transform: translate(-.7px, 9.7px) rotate(45deg) scale(.92, .36); }
-  .burger.is-open .base,
-  .w--open .burger .base  { transform: translate(.3px, -17px) rotate(-45deg) scaleX(.92); }
-  .burger.is-open .patty,
-  .w--open .burger .patty { transform: scale(.15); opacity: 0; }
+  .burger.is-open .bun   { transform: translate(-.7px, 9.7px) rotate(45deg) scale(.92, .36); }
+  .burger.is-open .base  { transform: translate(.3px, -17px) rotate(-45deg) scaleX(.92); }
+  .burger.is-open .patty { transform: scale(.15); opacity: 0; }
 
   @media (prefers-reduced-motion: reduce) {
     .burger, .burger svg path { transition-duration: 1ms; transition-delay: 0ms; }
@@ -76,16 +73,54 @@
 
 <script>
 (function () {
+  function setOpen(btn, open) {
+    btn.classList.toggle('is-open', open);
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
   document.querySelectorAll('[data-burger]').forEach(function (btn) {
+    var nav = btn.closest('.w-nav');
+    var wfBtn = nav && nav.querySelector('.w-nav-button');
+
+    if (wfBtn) {
+      // --- inside a Webflow Navbar: Webflow owns the click, we only follow along ---
+      if (wfBtn.contains(btn)) {
+        btn.classList.add('is-passive');           // let the click reach Webflow's button
+        btn.setAttribute('tabindex', '-1');
+        btn.setAttribute('aria-hidden', 'true');
+      } else {
+        btn.addEventListener('click', function () { wfBtn.click(); });
+      }
+
+      var menu = nav.querySelector('.w-nav-menu');
+      var sync = function () {
+        setOpen(btn, wfBtn.classList.contains('w--open') ||
+                     !!(menu && menu.hasAttribute('data-nav-menu-open')));
+      };
+      new MutationObserver(sync).observe(wfBtn, { attributes: true, attributeFilter: ['class'] });
+      if (menu) { new MutationObserver(sync).observe(menu, { attributes: true }); }
+      sync();
+
+      // the overlay starts below the navbar, so the menu centres in what is left of the
+      // screen rather than in a full-height box that hangs off the bottom
+      var setNavHeight = function () {
+        document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+      };
+      setNavHeight();
+      window.addEventListener('resize', setNavHeight);
+      return;
+    }
+
+    // --- anywhere else: the button drives itself ---
     btn.addEventListener('click', function () {
-      var open = btn.classList.toggle('is-open');
-      btn.setAttribute('aria-expanded', String(open));
-      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      var open = !btn.classList.contains('is-open');
+      setOpen(btn, open);
 
       var sel = btn.getAttribute('data-burger-target');
       if (sel) {
-        var menu = document.querySelector(sel);
-        if (menu) { menu.classList.toggle('is-open', open); }
+        var target = document.querySelector(sel);
+        if (target) { target.classList.toggle('is-open', open); }
       }
       btn.dispatchEvent(new CustomEvent('burger:toggle', {
         bubbles: true, detail: { open: open }
@@ -94,3 +129,26 @@
   });
 })();
 </script>
+
+<!-- Navbar layout: hides Webflow's own menu icon and centres the open menu. Delete this
+     block to leave your navbar exactly as it is. 991px is Webflow's tablet breakpoint,
+     where the navbar collapses. -->
+<style>
+  .w-nav-button .w-icon-nav-menu { display: none !important; }
+  .w-nav-button { display: inline-flex; align-items: center; justify-content: center; }
+
+  @media screen and (max-width: 991px) {
+    .w-nav-overlay { height: auto; }
+    .w-nav-overlay .w-nav-menu,
+    .w-nav[data-collapse] .w-nav-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: calc(100vh - var(--nav-h, 0px));
+      min-height: calc(100dvh - var(--nav-h, 0px));
+      text-align: center;
+    }
+  }
+</style>

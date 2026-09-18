@@ -15,14 +15,19 @@ swing across each other. Closing runs it in reverse, with the filling dropping b
 ## Use the HTML one
 
 Paste `menu-toggle.html` into an Embed. That is the whole install — it carries its own CSS,
-markup and a few lines of JS.
+markup and a few lines of JS, and it adapts to where you put it.
 
-- The button toggles `.is-open` on itself and keeps `aria-expanded` and its label in sync.
-- Add `data-burger-target="#nav"` to put `.is-open` on your menu as well, or listen for the
-  `burger:toggle` event (`e.detail.open`).
-- Inside Webflow's built-in Navbar, drop it into the menu button: the CSS also reacts to the
-  `w--open` class Webflow puts on that button, so the icon follows the navbar even when
-  Webflow is the one opening the menu.
+**Inside Webflow's Navbar** (Navbar > Menu Button) it makes itself passive: Webflow keeps
+handling the click and the icon only mirrors the navbar's open state, watching both the
+`w--open` class on the menu button and the `data-nav-menu-open` attribute on the menu. Two
+things fighting over one button is what makes these icons stick half-open, so the icon never
+toggles itself there. It also hides Webflow's own menu icon and centres the open menu, using
+the measured navbar height so the menu centres in the screen that is left rather than in a
+full-height box hanging off the bottom. Delete the second `<style>` block to skip that part.
+
+**Anywhere else** the button drives itself: it toggles `.is-open`, keeps `aria-expanded` and
+its label in sync, and fires a `burger:toggle` event (`e.detail.open`). Add
+`data-burger-target="#nav"` to put `.is-open` on your menu too.
 - Restyle through `--size`, `--color` and `--speed` on `.burger`.
 - `prefers-reduced-motion` is honoured: the state still changes, it just doesn't animate.
 
