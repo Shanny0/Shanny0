@@ -225,10 +225,16 @@ def el(cx, cy, r, name="ellipse"):
             "nm": name, "hd": False}
 
 
-def fill(color, op=100):
+def fill(color, op=100, rule=1):
+    """rule 1 = nonzero (svg default), 2 = evenodd."""
     return {"ty": "fl", "c": val(rgb(color)),
             "o": op if isinstance(op, dict) else val(op),
-            "r": 1, "bm": 0, "nm": "fill", "hd": False}
+            "r": rule, "bm": 0, "nm": "fill", "hd": False}
+
+
+def svg_paths(svg_file):
+    """Every <path> d attribute in a file, in document order (d need not come first)."""
+    return re.findall(r'<path[^>]*?\sd="([^"]+)"', open(svg_file).read())
 
 
 def stroke(color, width, op=100, dash=None):
@@ -309,6 +315,27 @@ def linear_gradient(stops, start, end, alpha=None, name="gradient"):
     return {"ty": "gf", "o": val(100), "r": 1, "bm": 0,
             "g": {"p": len(stops), "k": val(k)},
             "s": val(list(start)), "e": val(list(end)), "t": 1, "nm": name, "hd": False}
+
+
+def wipe(geo, color, t_in, t_out, angle=0.0, name="line"):
+    """A bar that wipes open from its left edge, then closes the same way.
+
+    Nested on purpose: the inner group scales from the left edge, the outer one carries the
+    bar's rotation about its own origin, exactly as the source svg does it.
+    """
+    a, b = t_in
+    c, e = t_out
+    left = (geo[0], geo[1] + geo[3] / 2.0)
+    return grp([grp([rc(*geo[:4], r=geo[4]), fill(color)], "bar", tr(
+        anchor=left,
+        s=anim([(0, [0, 100], "out"), (a, [0, 100], "out"), (b, [100, 100], "out"),
+                (c, [100, 100], "in"), (e, [0, 100], "in")])))],
+        name, tr(anchor=geo[:2], r=angle))
+
+
+def stack(items):
+    """Write nested group contents back-to-front; lottie paints the first item on top."""
+    return list(reversed(items))
 
 
 def comp(layers, name):
