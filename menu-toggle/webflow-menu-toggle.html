@@ -1,0 +1,104 @@
+<!--
+  Menu toggle for shanny.design. Paste this at the END of the existing Code Embed in the
+  Navbar (after the </script> that is already there), then check it in Preview before
+  publishing - an Embed runs in Preview, unlike site custom code.
+
+  On click it does both jobs:
+    - plays the Lottie forward 0 -> 30 (and backwards on close, from wherever it got to)
+    - opens and closes .menu_open itself, so it does not depend on the interaction
+
+  Because this owns the click, remove the Mouse click (tap) interaction from toggle_wrap,
+  or the two will fight over the menu.
+-->
+<script>
+(function () {
+  var TOGGLE = '.toggle_wrap';
+  var MENU   = '.menu_open';
+  var FADE   = 260;                 /* ms, matches the icon's swing closely enough */
+
+  var tries = 0;
+  var timer = setInterval(step, 120);
+  step();
+
+  function step() {
+    var done = false;
+    try { done = bind(); } catch (e) { done = false; }   /* never throw into Webflow */
+    if (done || ++tries > 80) { clearInterval(timer); }
+  }
+
+  function bind() {
+    var wrap = document.querySelector(TOGGLE);
+    var menu = document.querySelector(MENU);
+    if (!wrap || !menu) { return false; }
+    if (wrap.getAttribute('data-menu-bound')) { return true; }
+
+    /* The Lottie is optional: if it is not ready, the menu still has to work. */
+    var anim = findLottie(wrap);
+    if (anim) {
+      anim.loop = false;
+      anim.autoplay = false;
+      anim.goToAndStop(0, true);
+    }
+
+    wrap.setAttribute('data-menu-bound', '1');
+    wrap.style.cursor = 'pointer';
+    menu.style.transition = 'opacity ' + FADE + 'ms ease';
+
+    var open = false;
+    var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function setOpen(next) {
+      if (next === open) { return; }
+      open = next;
+
+      if (open) {
+        menu.style.display = 'flex';
+        menu.style.opacity = '0';
+        void menu.offsetHeight;                 /* reflow, so the fade actually runs */
+        menu.style.opacity = '1';
+      } else {
+        menu.style.opacity = '0';
+        setTimeout(function () {
+          if (!open) { menu.style.display = 'none'; }
+        }, still ? 0 : FADE);
+      }
+
+      if (anim) {
+        try {
+          if (still) { anim.goToAndStop(open ? anim.totalFrames - 1 : 0, true); }
+          else { anim.setDirection(open ? 1 : -1); anim.play(); }
+        } catch (e) {}
+      }
+    }
+
+    wrap.addEventListener('click', function () { setOpen(!open); });
+
+    /* Tapping a link closes the menu, otherwise the overlay stays over the page. */
+    menu.addEventListener('click', function (e) {
+      if (e.target && e.target.closest && e.target.closest('a')) { setOpen(false); }
+    });
+
+    /* Escape closes it too. */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && open) { setOpen(false); }
+    });
+
+    return true;
+  }
+
+  function findLottie(wrap) {
+    try {
+      var mod = window.Webflow && window.Webflow.require && window.Webflow.require('lottie');
+      var player = mod && mod.lottie;
+      if (!player || typeof player.getRegisteredAnimations !== 'function') { return null; }
+      var list = player.getRegisteredAnimations() || [];
+      for (var i = 0; i < list.length; i++) {
+        if (list[i] && list[i].wrapper && wrap.contains(list[i].wrapper) && list[i].isLoaded) {
+          return list[i];
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+})();
+</script>

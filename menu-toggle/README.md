@@ -7,6 +7,7 @@ swing across each other. Closing runs it in reverse, with the filling dropping b
 
 | file | what it is |
 | --- | --- |
+| `webflow-menu-toggle.html` | shanny.design: one embed that opens the menu **and** plays the Lottie |
 | `menu-toggle.html` | the component as SVG + CSS — paste the whole file into a Webflow Embed |
 | `menu-toggle-lottie.html` | the same thing driven by Lottie, animation inlined — paste either one, not both |
 | `menu-toggle.json` | the raw Lottie, frame 0 = burger, frame 30 = X |
@@ -57,6 +58,17 @@ python3 build_menu.py        # rebuilds menu-toggle.json
 The generator reuses the toolkit in `../lottie/lottiekit.py` and computes each piece's
 bounding-box centre by sampling its curves, which is what `transform-box: fill-box` does in
 the CSS version — so both turn around exactly the same points.
+
+## Owning the whole toggle
+
+`webflow-menu-toggle.html` is the version in use on shanny.design, where the Webflow click
+interaction stopped firing. Rather than depending on it, the embed owns both halves of the
+click: it plays the Lottie 0 → 30 (and back, reversing from wherever it got to) and shows or
+hides `.menu_open` itself with a fade, closing again on a link tap or Escape.
+
+The Lottie is treated as optional — if the player is not ready, the menu still opens. Since
+this owns the click, the Mouse click (tap) interaction on `toggle_wrap` should be removed, or
+the two fight over the menu.
 
 ## Driving Webflow's own Lottie element
 
