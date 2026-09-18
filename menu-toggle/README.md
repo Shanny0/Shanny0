@@ -58,6 +58,29 @@ The generator reuses the toolkit in `../lottie/lottiekit.py` and computes each p
 bounding-box centre by sampling its curves, which is what `transform-box: fill-box` does in
 the CSS version — so both turn around exactly the same points.
 
+## Driving Webflow's own Lottie element
+
+`webflow-lottie-onclick.js` is for the case where the animation is placed as a Webflow
+**Lottie element** rather than through the embed above. That element autoplays on load, which
+runs the whole transition and leaves the icon resting on the X, and its playback settings are
+not exposed to the API — so the fix is to take the player over at runtime:
+
+```js
+var player = Webflow.require('lottie').lottie;          // Webflow's bodymovin instance
+var anim = player.getRegisteredAnimations()             // the one inside .toggle_wrap
+             .find(a => wrap.contains(a.wrapper));
+anim.autoplay = false;
+anim.goToAndStop(0, true);                              // hold the burger
+```
+
+then `setDirection(1|-1)` + `play()` on each click of the toggle, which reverses from
+wherever it got to. It polls briefly for the player, because Webflow registers its animations
+after its own init.
+
+On shanny.design this runs as a registered footer script named `BurgerToggleOnClick`
+(Site settings > Custom code), and the toggle element is `.toggle_wrap` — change that
+selector if yours differs.
+
 ## The geometry
 
 Everything rotates about its own centre, then moves to where the strokes cross (22.5, 21.5):
