@@ -18,12 +18,18 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # these at call time, so a scene's setup() applies to everything it builds afterwards.
 W, H = 385, 366
 FPS = 60
-DUR = 300                      # 5s loop; frame DUR == frame 0 so the loop is seamless
+DUR = 375                      # frame DUR == frame 0, so every loop is seamless
+
+# One number retimes the whole set: every keyframe time and every loop length is multiplied
+# by it. Above 1 the animations play slower, below 1 faster; scenes keep their own timings
+# in their original frames and never need touching.
+TIME_SCALE = 1.25
 
 
 def setup(w, h, fps, dur):
     global W, H, FPS, DUR
-    W, H, FPS, DUR = w, h, fps, dur
+    W, H, FPS = w, h, fps
+    DUR = int(round(dur * TIME_SCALE))
 
 # ------------------------------------------------------------------- palette
 PAPER = "#E9E8DE"
@@ -62,6 +68,7 @@ def anim(keys):
     """keys: [(frame, value, ease_for_segment_starting_here), ...]"""
     clean = []
     for t, v, e in keys:
+        t = int(round(t * TIME_SCALE))
         v = list(v) if isinstance(v, (list, tuple)) else [v]
         if clean and clean[-1][0] == t:      # dedupe stacked keyframes
             clean[-1] = (t, v, e)

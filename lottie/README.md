@@ -1,8 +1,8 @@
 # Lottie animations
 
 Looping Lottie animations built from the Frame 76 illustration set. Each one is a seamless
-5s loop at 60fps with a **transparent background**, so it takes the colour of whatever page
-or section it sits in.
+6.25s loop at 60fps with a **transparent background**, so it takes the colour of whatever
+page or section it sits in.
 
 | | | |
 | --- | --- | --- |
@@ -67,6 +67,11 @@ python3 build_flow.py       # or just one
 ```
 
 No dependencies — stdlib only.
+
+**Playback speed** is one number: `TIME_SCALE` in `lottiekit.py`. It multiplies every
+keyframe time and every loop length, so the whole set retimes together — 1.25 is the current
+setting (375 frames at 60fps); 1.0 would be the original 5s pace. Scene files always keep
+their timings in unscaled frames, so they never need touching.
 
 | file | role |
 | --- | --- |
