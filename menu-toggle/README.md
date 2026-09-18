@@ -7,8 +7,9 @@ swing across each other. Closing runs it in reverse, with the filling dropping b
 
 | file | what it is |
 | --- | --- |
-| `menu-toggle.html` | the component — paste the whole file into a Webflow Embed |
-| `menu-toggle.json` | the same transition as a Lottie, frame 0 = burger, frame 30 = X |
+| `menu-toggle.html` | the component as SVG + CSS — paste the whole file into a Webflow Embed |
+| `menu-toggle-lottie.html` | the same thing driven by Lottie, animation inlined — paste either one, not both |
+| `menu-toggle.json` | the raw Lottie, frame 0 = burger, frame 30 = X |
 | `build_menu.py` | generator for the Lottie |
 | `assets/menu-toggle.svg` | the source icon |
 
@@ -36,9 +37,18 @@ it got to instead of jumping — which is what you want on a button people can s
 
 ## Or the Lottie one
 
-`menu-toggle.json` is the same motion for anywhere that already renders Lottie: play
-0 → 30 to open and 30 → 0 to close. It does not loop, and it can't reverse mid-flight as
-gracefully as the CSS version, so prefer the embed for a menu button.
+`menu-toggle-lottie.html` is the same component with the Lottie doing the drawing. Paste it
+the same way — the animation is inlined, so there is no file to upload and no interaction to
+configure.
+
+Use it instead of Webflow's native Lottie element rather than alongside it. That element
+autoplays on load, which runs 0 → 30 and leaves the icon resting on the X; this one holds
+frame 0 until the navbar opens, then plays forward, and reverses from wherever it got to if
+you tap again mid-flight. Options: `data-size`, `data-color` (the colour is baked into the
+JSON, so it gets rewritten at load), and `el.__burgerLottie` for the player instance.
+
+`menu-toggle.json` on its own is the raw file if you want to drive it yourself: play 0 → 30
+to open, 30 → 0 to close, no loop.
 
 ```bash
 python3 build_menu.py        # rebuilds menu-toggle.json

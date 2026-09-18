@@ -1,0 +1,151 @@
+<!--
+  Burger -> X menu toggle, Lottie version. Paste the whole thing into a Webflow Embed,
+  inside the Navbar's menu button (Navbar > Menu Button).
+
+  Use this instead of Webflow's Lottie element, not next to it: the native element autoplays
+  on load, which leaves it resting on the X. This one loads the same file, holds frame 0 (the
+  burger), and plays to the X only when the menu opens - reversing from wherever it got to if
+  you tap again mid-flight. The animation is inlined below, so there is no file to upload and
+  no interaction to set up.
+
+  Options on the div: data-size="44" (px), data-color="#FBF9EF".
+  The second <style> block at the bottom is the navbar layout - delete it if you don't
+  want it.
+-->
+<style>
+  .burger-lottie {
+    --size: 44px;
+    width: var(--size);
+    aspect-ratio: 45 / 43;
+    display: inline-block;
+    line-height: 0;
+    cursor: pointer;
+  }
+  .burger-lottie svg { display: block; width: 100% !important; height: 100% !important; }
+  /* inside Webflow's menu button the click belongs to Webflow, so let it pass through */
+  .burger-lottie.is-passive { pointer-events: none; cursor: inherit; }
+</style>
+
+<div class="burger-lottie" data-burger-lottie data-size="44" data-color="#FBF9EF"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<script>
+(function () {
+  var DATA = {"v":"5.7.4","fr":60,"ip":0,"op":31,"w":45,"h":43,"nm":"Menu toggle - burger to X","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"stroke","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]}},"ao":0,"shapes":[{"ty":"gr","np":3,"nm":"stroke","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[-4.940599999999996,-8.03651],[3.6208000000000027,-0.35630000000000095],[0.14209999999999923,0.01120000000000232],[0.0,0.0],[0.0,0.0],[0.1375099999999998,0.037599999999997635],[-6.21736,7.94473],[-2.901299999999999,-0.043320000000000025]],"o":[[4.799800000000005,8.8734],[-0.1418999999999997,0.01389999999999958],[0.0,0.0],[0.0,0.0],[-0.14195000000000046,-0.012699999999998823],[-3.51012,-0.9573],[6.216139999999999,-7.0961739999999995],[2.8676999999999992,0.4429399999999999]],"v":[[41.3711,10.8564],[36.8855,22.9414],[36.4604,22.9427],[21.8401,21.784],[7.23209,20.4791],[6.8132,20.4066],[4.41376,7.74137],[23.5278,1.76054]],"c":true}},"nm":"path","hd":false},{"ty":"fl","c":{"a":0,"k":[0.984313725490196,0.9764705882352941,0.9372549019607843,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"fill","hd":false},{"ty":"tr","p":{"a":1,"k":[{"t":0,"s":[22.35160732494213,12.315166046875001],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":4,"s":[22.35160732494213,12.315166046875001],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":30,"s":[22.5,21.5]}]},"a":{"a":0,"k":[22.35160732494213,12.315166046875001]},"s":{"a":1,"k":[{"t":0,"s":[100,100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":4,"s":[100,100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":30,"s":[92.0,36.0]}]},"r":{"a":1,"k":[{"t":0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":4,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":24,"s":[48.0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":30,"s":[45.0]}]},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"nm":"Transform"}]}],"ip":0,"op":31,"st":0,"bm":0},{"ddd":0,"ind":2,"ty":4,"nm":"stroke","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]}},"ao":0,"shapes":[{"ty":"gr","np":3,"nm":"stroke","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[-0.3609999999999971,1.1232000000000042],[0.0,0.0],[1.8415999999999997,0.0],[0.0,0.0],[-0.631718,-1.7687999999999988],[0.0,0.0],[-1.1478399999999995,0.0],[0.0,0.0]],"o":[[0.0,0.0],[0.563600000000001,-1.7531999999999996],[0.0,0.0],[-1.8782399999999997,0.0],[0.0,0.0],[0.38606000000000007,1.081000000000003],[0.0,0.0],[1.1798000000000002,0.0]],"v":[[42.1614,40.3978],[42.8598,38.2249],[40.2741,34.6777],[3.85409,34.6777],[1.29627,38.3073],[2.07228,40.4801],[4.6301,42.2827],[39.5757,42.2827]],"c":true}},"nm":"path","hd":false},{"ty":"fl","c":{"a":0,"k":[0.984313725490196,0.9764705882352941,0.9372549019607843,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"fill","hd":false},{"ty":"tr","p":{"a":1,"k":[{"t":0,"s":[22.06390414351852,38.4802],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":4,"s":[22.06390414351852,38.4802],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":30,"s":[22.5,21.5]}]},"a":{"a":0,"k":[22.06390414351852,38.4802]},"s":{"a":1,"k":[{"t":0,"s":[100,100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":4,"s":[100,100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":30,"s":[92.0,100.0]}]},"r":{"a":1,"k":[{"t":0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":4,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":24,"s":[-48.0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1.0]}},{"t":30,"s":[-45.0]}]},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"nm":"Transform"}]}],"ip":0,"op":31,"st":0,"bm":0},{"ddd":0,"ind":3,"ty":4,"nm":"patty","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]}},"ao":0,"shapes":[{"ty":"gr","np":3,"nm":"patty","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[-0.9000300000000001,0.0],[0.0,0.0],[-0.2532999999999994,-0.1518999999999977],[0.0,0.0],[-0.5286000000000008,0.3827999999999996],[0.0,0.0],[-0.34320000000000306,0.0],[0.0,0.0],[0.0,-0.8999999999999986],[0.0,0.0],[0.8997000000000028,-0.00039999999999906777],[0.0,0.0],[1.0000000000065512e-05,0.9003000000000014],[0.0,0.0]],"o":[[0.0,0.0],[0.2954000000000008,0.0],[0.0,0.0],[0.5595999999999997,0.33580000000000254],[0.0,0.0],[0.27809999999999846,-0.2012999999999998],[0.0,0.0],[0.9000000000000057,0.0],[0.0,0.0],[0.0,0.8996999999999993],[0.0,0.0],[-0.9003100000000002,0.00039999999999906777],[0.0,0.0],[-1.0000000000065512e-05,-0.9000999999999983]],"v":[[2.71559,25.0],[11.2271,25.0],[12.0656,25.2322],[20.262,30.1501],[22.0562,30.0726],[28.6335,25.3097],[29.5893,25.0],[41.2835,25.0],[42.9131,26.6296],[42.9131,30.7045],[41.2842,32.3341],[2.71641,32.3521],[1.08602,30.7225],[1.08596,26.6297]],"c":true}},"nm":"path","hd":false},{"ty":"fl","c":{"a":0,"k":[0.984313725490196,0.9764705882352941,0.9372549019607843,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"fill","hd":false},{"ty":"tr","p":{"a":0,"k":[21.999530000000004,28.676049999999996]},"a":{"a":0,"k":[21.999530000000004,28.676049999999996]},"s":{"a":1,"k":[{"t":0,"s":[100,100],"o":{"x":[0.65],"y":[0.0]},"i":{"x":[0.35],"y":[1.0]}},{"t":11,"s":[15,15]}]},"r":{"a":0,"k":0},"o":{"a":1,"k":[{"t":0,"s":[100],"o":{"x":[0.65],"y":[0.0]},"i":{"x":[0.35],"y":[1.0]}},{"t":9,"s":[0]}]},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"nm":"Transform"}]}],"ip":0,"op":31,"st":0,"bm":0}],"markers":[]};
+
+  function recolour(doc, hex) {
+    var m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex || '');
+    if (!m) { return doc; }
+    var rgb = [parseInt(m[1], 16) / 255, parseInt(m[2], 16) / 255, parseInt(m[3], 16) / 255, 1];
+    (doc.layers || []).forEach(function walk(layer) {
+      (layer.shapes || []).forEach(function each(shape) {
+        if (shape.ty === 'fl') { shape.c.k = rgb; }
+        if (shape.it) { shape.it.forEach(each); }
+      });
+    });
+    return doc;
+  }
+
+  function start(host) {
+    var doc = recolour(JSON.parse(JSON.stringify(DATA)), host.getAttribute('data-color'));
+    var size = host.getAttribute('data-size');
+    if (size) { host.style.setProperty('--size', parseFloat(size) + 'px'); }
+
+    var anim = lottie.loadAnimation({
+      container: host, renderer: 'svg', loop: false, autoplay: false, animationData: doc
+    });
+    var END = doc.op - 1;                       // the last drawn frame: the finished X
+    host.__burgerLottie = anim;                 // exposed so you can setSpeed() it if you like
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var open = false;
+
+    anim.addEventListener('DOMLoaded', function () { anim.goToAndStop(0, true); });
+
+    function show(next) {
+      if (next === open) { return; }
+      open = next;
+      if (reduced) { anim.goToAndStop(next ? END : 0, true); return; }
+      anim.setDirection(next ? 1 : -1);         // reverses from wherever it currently is
+      anim.play();
+    }
+
+    var nav = host.closest('.w-nav');
+    var wfBtn = nav && nav.querySelector('.w-nav-button');
+
+    if (wfBtn) {
+      // --- inside a Webflow Navbar: Webflow owns the click, we only follow along ---
+      if (wfBtn.contains(host)) { host.classList.add('is-passive'); }
+      else { host.addEventListener('click', function () { wfBtn.click(); }); }
+
+      var menu = nav.querySelector('.w-nav-menu');
+      var sync = function () {
+        show(wfBtn.classList.contains('w--open') ||
+             !!(menu && menu.hasAttribute('data-nav-menu-open')));
+      };
+      new MutationObserver(sync).observe(wfBtn, { attributes: true, attributeFilter: ['class'] });
+      if (menu) { new MutationObserver(sync).observe(menu, { attributes: true }); }
+      sync();
+
+      // the overlay starts below the navbar, so the menu centres in what is left of the
+      // screen rather than in a full-height box that hangs off the bottom
+      var setNavHeight = function () {
+        document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+      };
+      setNavHeight();
+      window.addEventListener('resize', setNavHeight);
+      return;
+    }
+
+    // --- anywhere else: the icon drives itself ---
+    host.setAttribute('role', 'button');
+    host.setAttribute('tabindex', '0');
+    host.setAttribute('aria-label', 'Open menu');
+    host.setAttribute('aria-expanded', 'false');
+    host.addEventListener('click', function () {
+      show(!open);
+      host.setAttribute('aria-expanded', String(open));
+      host.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      var sel = host.getAttribute('data-burger-target');
+      if (sel) {
+        var target = document.querySelector(sel);
+        if (target) { target.classList.toggle('is-open', open); }
+      }
+      host.dispatchEvent(new CustomEvent('burger:toggle', {
+        bubbles: true, detail: { open: open }
+      }));
+    });
+    host.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); host.click(); }
+    });
+  }
+
+  function boot() {
+    document.querySelectorAll('[data-burger-lottie]').forEach(start);
+  }
+  if (window.lottie) { boot(); }
+  else { document.currentScript.previousElementSibling.addEventListener('load', boot); }
+})();
+</script>
+
+<!-- Navbar layout: hides Webflow's own menu icon and centres the open menu. Delete this
+     block to leave your navbar exactly as it is. 991px is Webflow's tablet breakpoint,
+     where the navbar collapses. -->
+<style>
+  .w-nav-button .w-icon-nav-menu { display: none !important; }
+  .w-nav-button { display: inline-flex; align-items: center; justify-content: center; }
+
+  @media screen and (max-width: 991px) {
+    .w-nav-overlay { height: auto; }
+    .w-nav-overlay .w-nav-menu,
+    .w-nav[data-collapse] .w-nav-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: calc(100vh - var(--nav-h, 0px));
+      min-height: calc(100dvh - var(--nav-h, 0px));
+      text-align: center;
+    }
+  }
+</style>
