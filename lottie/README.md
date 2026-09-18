@@ -10,11 +10,16 @@ The collaborative-canvas frame: a design file assembling itself, two cursors wor
 together, then the whole thing resetting. 5s, seamless — frame 300 is identical to frame 0,
 so it loops with no visible cut.
 
+**The background is transparent** — the animation takes on whatever colour sits behind it.
+To put the original paper-coloured card back, set `SHOW_CARD = True` at the top of
+`build.py` and re-run it. One thing to watch: the measurement frame, ticks and connector are
+drawn in black, so they disappear on a dark background.
+
 | file | what it is |
 | --- | --- |
-| `frame76-canvas.json` | the animation — 385x366, 60fps, 300 frames, 17 layers, ~63 KB |
+| `frame76-canvas.json` | the animation — 385x366, 60fps, 300 frames, 16 layers, ~62 KB |
 | `preview.html` | self-contained player (play/pause, scrub, speed, light/dark) — just open it |
-| `preview.gif` | 30fps flipbook of the loop, for READMEs and chats |
+| `preview.gif` | 30fps flipbook of the loop, transparent, for READMEs and chats |
 | `build.py` | generator — the JSON is built from here, not hand-edited |
 | `assets/frame76-canvas.svg` | the source illustration |
 

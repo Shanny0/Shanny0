@@ -23,6 +23,8 @@ OUT_PATH = os.path.join(HERE, "frame76-canvas.json")
 W, H = 385, 366
 FPS = 60
 DUR = 300                      # 5s loop; frame 300 == frame 0 so the loop is seamless
+SHOW_CARD = False              # the paper-coloured card behind everything; off = transparent
+                               # background, so the animation takes the page/section colour
 
 # ------------------------------------------------------------------- palette
 PAPER = "#E9E8DE"
@@ -369,8 +371,10 @@ def build():
     back_to_front = []
     add = back_to_front.append
 
-    # 1. the card itself - always on screen, it is the stage
-    add(layer("card", [grp([rc(0, 0, W, 365.5, 32), fill(PAPER)], "card")]))
+    # 1. the stage. The card is the paper-coloured plate the whole scene sits on; with
+    #    SHOW_CARD off it is simply absent, leaving the composition on transparency.
+    if SHOW_CARD:
+        add(layer("card", [grp([rc(0, 0, W, 365.5, 32), fill(PAPER)], "card")]))
     add(layer("sheet", [grp([rc(*SHEET_R[:4], r=SHEET_R[4]), fill(SHEET)], "sheet")],
               anchor=ctr(*SHEET_R[:4])))
 
