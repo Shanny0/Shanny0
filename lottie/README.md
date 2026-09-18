@@ -1,52 +1,69 @@
 # Lottie animations
 
-Looping Lottie animations built from the Frame 76 illustration set.
+Looping Lottie animations built from the Frame 76 illustration set. Each one is a seamless
+5s loop at 60fps with a **transparent background**, so it takes the colour of whatever page
+or section it sits in.
 
-## frame76-canvas
+| | |
+| --- | --- |
+| ![canvas](frame76-canvas.gif) | ![window](frame76-window.gif) |
+| **frame76-canvas** — a design file assembling itself, two cursors working on it, then a reset | **frame76-window** — an app window opening, loading its content, then packing away |
 
-![preview](preview.gif)
+## Files
 
-The collaborative-canvas frame: a design file assembling itself, two cursors working on it
-together, then the whole thing resetting. 5s, seamless — frame 300 is identical to frame 0,
-so it loops with no visible cut.
-
-**The background is transparent** — the animation takes on whatever colour sits behind it.
-To put the original paper-coloured card back, set `SHOW_CARD = True` at the top of
-`build.py` and re-run it. One thing to watch: the measurement frame, ticks and connector are
-drawn in black, so they disappear on a dark background.
+Every animation ships as three files plus its source illustration:
 
 | file | what it is |
 | --- | --- |
-| `frame76-canvas.json` | the animation — 385x366, 60fps, 300 frames, 16 layers, ~62 KB |
-| `preview.html` | self-contained player (play/pause, scrub, speed, light/dark) — just open it |
-| `preview.gif` | 30fps flipbook of the loop, transparent, for READMEs and chats |
-| `build.py` | generator — the JSON is built from here, not hand-edited |
-| `assets/frame76-canvas.svg` | the source illustration |
+| `<name>.json` | the animation — drop this into Webflow, lottie-web, Figma, iOS or Android |
+| `<name>.html` | self-contained player (play/pause, scrub, speed, light/dark) — just open it |
+| `<name>.gif` | 30fps transparent flipbook, for READMEs and chats |
+| `assets/<name>.svg` | the source illustration |
 
-### Beat sheet
+| animation | size | layers | json |
+| --- | --- | --- | --- |
+| frame76-canvas | 385x366 | 16 | ~62 KB |
+| frame76-window | 386x366 | 9 | ~26 KB |
 
-| frames | beat |
-| --- | --- |
-| 0–42 | wireframe blocks stagger in from under the canvas edge; the purple CTA pops last |
-| 30–70 | the selection frame draws itself around the artboard, corner ticks pop in one by one, measure line extends |
-| 50–96 | **You** (red) flies in from off-canvas, **Me** (purple) comes up from the corner |
-| 84 | You clicks the CTA — button presses, two red ripples fire |
-| 86–116 | the avatar badge pops from its tail; the connector slides out from behind the left edge |
-| 108–226 | live: marching ants run around the selection, presence pulses ring the avatar, both cursors drift |
-| 214–292 | everything leaves in reverse order, back to the bare canvas |
+## Beat sheets
 
-### Regenerating
+**frame76-canvas** — 0–42 wireframe blocks stagger in from under the canvas edge, purple CTA
+last · 30–70 selection frame draws itself, corner ticks pop, measure line extends · 50–96
+**You** and **Me** arrive · 84 You clicks the CTA, ripples fire · 86–116 avatar badge pops,
+connector slides out from the left edge · 108–226 live: marching ants, presence pulses,
+cursor drift · 214–292 everything leaves in reverse.
+
+**frame76-window** — 0–24 the window opens · 14–32 traffic lights pop one by one · 18–44
+chrome: avatar and toolbar pills · 30–52 the media block · 46–76 the bird flies in, settles
+and its eye opens · 56–90 purple tile, side pane, bottom strip · 96–216 loading: two shimmer
+sweeps rake the media block, the bottom strip fills like a progress bar, the bird blinks
+twice, the green light blips · 214–292 packs away in reverse.
+
+## Regenerating
 
 ```bash
-python3 build.py        # rewrites frame76-canvas.json and preview.html
+python3 build.py            # rebuilds every animation
+python3 build_window.py     # or just one
 ```
 
-No dependencies — stdlib only. Tweak the timeline constants near the top of the scene
-section (`IN`, `OUT`, `SEL_IN`, `CLICK`, …) and re-run. `build.py` parses the source SVG's
-path data directly, so the vector shapes stay identical to the illustration; only geometry
-that needed semantic grouping (panels, cursors, badge) is named explicitly.
+No dependencies — stdlib only.
 
-### Using it
+| file | role |
+| --- | --- |
+| `lottiekit.py` | shared toolkit: shapes, easing, keyframes, SVG path parser, preview page |
+| `build_canvas.py`, `build_window.py` | one scene per illustration — geometry and timeline |
+| `build.py` | builds all of them |
+
+Each scene parses its source SVG's path data directly, so the vector shapes stay identical
+to the illustration; only geometry that needed semantic grouping (panels, cursors, the bird)
+is named explicitly. Timeline constants sit near the top of each scene file.
+
+Both scenes have `SHOW_CARD = False`, which drops the paper-coloured card the illustration
+was drawn on. Set it to `True` for the original opaque card. One thing to watch on
+frame76-canvas: its measurement frame, ticks and connector are drawn in black, so they need
+a light background.
+
+## Using them
 
 ```bash
 npm i lottie-web
@@ -54,15 +71,17 @@ npm i lottie-web
 
 ```js
 import lottie from 'lottie-web';
-import animationData from './frame76-canvas.json';
+import animationData from './frame76-window.json';
 
 lottie.loadAnimation({ container: el, renderer: 'svg', loop: true, autoplay: true, animationData });
 ```
 
 React (`lottie-react`): `<Lottie animationData={data} loop />`.
-Web component: `<dotlottie-player src="frame76-canvas.json" autoplay loop>`.
+Webflow: Add panel → Media → Lottie animation, upload the JSON, set Trigger to Autoplay and
+Loop to infinite. Keep the SVG renderer — trim paths, dashes, gradients and masks all depend
+on it.
 Figma / After Effects: import the JSON through the LottieFiles plugin.
 
-Built with plain shape layers, trim paths, dashes and masks — no expressions, images or
-fonts — so it renders the same in lottie-web, lottie-ios, lottie-android and rlottie.
-`preview.html` pulls the player from jsDelivr, so it needs a connection the first time.
+Built from plain shape layers — no expressions, images or fonts — so they render the same in
+lottie-web, lottie-ios, lottie-android and rlottie. The `<name>.html` previews pull the
+player from jsDelivr, so they need a connection the first time.
