@@ -77,9 +77,13 @@ then `setDirection(1|-1)` + `play()` on each click of the toggle, which reverses
 wherever it got to. It polls briefly for the player, because Webflow registers its animations
 after its own init.
 
-On shanny.design this runs as a registered footer script named `BurgerToggleOnClick`
-(Site settings > Custom code), and the toggle element is `.toggle_wrap` — change that
-selector if yours differs.
+The toggle element is `.toggle_wrap` — change that selector if yours differs.
+
+Paste it into a Code Embed rather than site custom code. An Embed runs in Webflow's Preview,
+so the menu can be verified before anything is published; site custom code only runs on the
+published site, which means a mistake in it is only discovered live. Nothing in the script is
+allowed to throw either: the whole body sits in a try/catch and it never uses `Webflow.push`,
+so even if it fails outright the menu still opens.
 
 ## The geometry
 
