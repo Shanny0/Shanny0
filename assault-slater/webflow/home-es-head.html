@@ -1,4 +1,37 @@
 <script>document.documentElement.lang="es";</script>
+<!-- ASSAULT (Home ES): fonts + styles (the scripts are in Slater) -->
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,500&display=swap">
-<style>.countdown_number{font-family:Archivo,sans-serif!important;font-stretch:125%;font-weight:500!important}.footer_spot.is-faq{opacity:0;transition:opacity .6s ease}.section_faq.is-lit .footer_spot.is-faq{opacity:1}.faq_item.is-open{background-image:linear-gradient(172deg,rgba(0,0,0,0) 45%,rgba(59,0,148,.55) 120%)!important;border-radius:0!important}.faq_question:hover .faq_question-text{transform:translateX(8px)}.faq_item:not(.is-open) .faq_question:hover .faq_question-text{color:#d9ccff}.faq_icon,.faq_icon.is-open{transform:none!important}.faq_icon::after{content:"";position:absolute;inset:0;border:1px solid #4a3f66;transform:skewX(-14deg);transition:background-color .4s,border-color .4s}.faq_icon::before{content:"";position:absolute;left:50%;top:50%;z-index:1;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;background:linear-gradient(#8f5bff,#8f5bff) center/13px 1.5px no-repeat,linear-gradient(#8f5bff,#8f5bff) center/1.5px 13px no-repeat;transition:transform .45s cubic-bezier(.2,.8,.2,1)}.faq_icon.is-open::after{background-color:#6400fa;border-color:#6400fa}.faq_icon.is-open::before{transform:rotate(45deg);background:linear-gradient(#fff,#fff) center/13px 1.5px no-repeat,linear-gradient(#fff,#fff) center/1.5px 13px no-repeat}.faq_ask-link:hover{color:#cbb6ff}@media (max-width:767px){.faq_icon{width:2.375rem;height:1.625rem}}.gallery_image-wrap>.w-background-video{position:absolute;inset:0;width:100%;height:100%;z-index:1;background:0 0}.gallery_image-wrap>.w-background-video>video{object-fit:cover;width:100%;height:100%}.numbers_dial-photo{background:url("https://s3.amazonaws.com/webflow-prod-assets/6aa96c394582257aa18b9f85/6ab2e65ac9a2eaeef9a9a81d_gallery-02-atmosphere-p-800.png") 50% 22%/cover no-repeat;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 70%);mask-image:radial-gradient(circle,#000 30%,transparent 70%)}.numbers_dial-svg svg{display:block;width:100%;height:100%;overflow:visible}.dial-track{fill:none;stroke:#1d1b22;stroke-width:14}.dial-arc{fill:none;stroke:url(#dialGrad);stroke-width:14;filter:drop-shadow(0 0 14px rgba(143,91,255,.7))}.dial-tick{stroke:#3a3542;stroke-width:1.5}.dial-tick.is-major{stroke:#8e8b95;stroke-width:2}.dial-cut{stroke:#010101;stroke-width:6}.dial-hour{fill:#8e8b95;font-family:inherit;font-size:14px;font-weight:600;letter-spacing:.16em}.dial-hour.is-on{fill:#eeeeee}.dial-head{fill:#fff;filter:drop-shadow(0 0 10px #b596ff) drop-shadow(0 0 22px #6400fa);transition:opacity .4s}.numbers_dial-big{text-shadow:0 0 40px rgba(100,0,250,.6)}@media (max-width:767px){.dial-hour{font-size:20px}}</style>
+<style>
+/* Countdown: Archivo Expanded Medium */
+.countdown_number{font-family:"Archivo",sans-serif!important;font-stretch:125%;font-weight:500!important;}
+.footer_spot.is-faq{opacity:0;transition:opacity .6s ease;}
+.section_faq.is-lit .footer_spot.is-faq{opacity:1;}
+/* FAQ: slanted +/× icon, hover nudge */
+.faq_item.is-open{background-image:linear-gradient(172deg,rgba(0,0,0,0) 45%,rgba(59,0,148,.55) 120%)!important;border-radius:0!important;}
+.faq_question:hover .faq_question-text{transform:translateX(8px);}
+.faq_item:not(.is-open) .faq_question:hover .faq_question-text{color:#d9ccff;}
+.faq_icon,.faq_icon.is-open{transform:none!important;}
+.faq_icon::after{content:"";position:absolute;inset:0;border:1px solid #4a3f66;transform:skewX(-14deg);transition:background-color .4s,border-color .4s;}
+.faq_icon::before{content:"";position:absolute;left:50%;top:50%;z-index:1;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;background:linear-gradient(#8f5bff,#8f5bff) center/13px 1.5px no-repeat,linear-gradient(#8f5bff,#8f5bff) center/1.5px 13px no-repeat;transition:transform .45s cubic-bezier(.2,.8,.2,1);}
+.faq_icon.is-open::after{background-color:#6400fa;border-color:#6400fa;}
+.faq_icon.is-open::before{transform:rotate(45deg);background:linear-gradient(#fff,#fff) center/13px 1.5px no-repeat,linear-gradient(#fff,#fff) center/1.5px 13px no-repeat;}
+.faq_ask-link:hover{color:#cbb6ff;}
+@media (max-width:767px){.faq_icon{width:2.375rem;height:1.625rem;}}
+/* Gallery: a Background Video dropped into a card fills it, on top of the photo (the photo stays as fallback) */
+.gallery_image-wrap > .w-background-video{position:absolute;inset:0;width:100%;height:100%;z-index:1;background:transparent;}
+.gallery_image-wrap > .w-background-video > video{object-fit:cover;width:100%;height:100%;}
+/* The format: dial */
+.numbers_dial-photo{background:url("https://s3.amazonaws.com/webflow-prod-assets/6aa96c394582257aa18b9f85/6ab2e65ac9a2eaeef9a9a81d_gallery-02-atmosphere-p-800.png") 50% 22%/cover no-repeat;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 70%);mask-image:radial-gradient(circle,#000 30%,transparent 70%);}
+.numbers_dial-svg svg{display:block;width:100%;height:100%;overflow:visible;}
+.dial-track{fill:none;stroke:#1d1b22;stroke-width:14;}
+.dial-arc{fill:none;stroke:url(#dialGrad);stroke-width:14;filter:drop-shadow(0 0 14px rgba(143,91,255,.7));}
+.dial-tick{stroke:#3a3542;stroke-width:1.5;}
+.dial-tick.is-major{stroke:#8e8b95;stroke-width:2;}
+.dial-cut{stroke:#010101;stroke-width:6;}
+.dial-hour{fill:#8e8b95;font-family:inherit;font-size:14px;font-weight:600;letter-spacing:.16em;}
+.dial-hour.is-on{fill:#eeeeee;}
+.dial-head{fill:#fff;filter:drop-shadow(0 0 10px #b596ff) drop-shadow(0 0 22px #6400fa);transition:opacity .4s;}
+.numbers_dial-big{text-shadow:0 0 40px rgba(100,0,250,.6);}
+@media (max-width:767px){.dial-hour{font-size:20px;}}
+</style>

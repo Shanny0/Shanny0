@@ -178,9 +178,11 @@
         g.setIndex(idx);
         return g;
       }
-      var FnCurve = class extends THREE.Curve {
-        constructor(fn) { super(); this.fn = fn; }
-        getPoint(t, target) { return this.fn(t, target || new THREE.Vector3()); }
+      // A Three curve drawn by a function (no `class`, so Slater's minifier accepts it)
+      var FnCurve = function (fn) {
+        var curve = new THREE.Curve();
+        curve.getPoint = function (t, target) { return fn(t, target || new THREE.Vector3()); };
+        return curve;
       };
 
       /* ---------- Line wire: two strands twisted into a rope ---------- */
@@ -778,8 +780,10 @@
 
   onReady(function () {
     if (!document.querySelector(".section_manifesto")) return;
-    // Minified bundle first; if the CDN can't serve it, fall back to the plain build
-    var three = import(THREE_CDN + "+esm").catch(function () { return import(THREE_CDN + "build/three.module.js"); });
+    // Three.js is only published as an ES module: load it with import(), wrapped so Slater's minifier accepts it.
+    // Minified bundle first; if the CDN can't serve it, fall back to the plain build.
+    var importModule = new Function("url", "return import(url)");
+    var three = importModule(THREE_CDN + "+esm").catch(function () { return importModule(THREE_CDN + "build/three.module.js"); });
     Promise.all([three, loadGsap().then(function () { gsap.registerPlugin(ScrollTrigger); }, function () {})])
       .then(function (r) { run(r[0]); });
   });
