@@ -277,7 +277,7 @@
     var vids = [];
     [].slice.call(s.querySelectorAll("[data-gallery-video]")).forEach(function (slot) {
       var src = (slot.textContent || "").trim(), wrap = slot.parentNode, img = wrap && wrap.querySelector(".gallery_image");
-      if (!/^https?:\/\//.test(src) || !img) return;
+      if (!/^https?:\/{2}/.test(src) || !img) return;
       var vid = d.createElement("video");
       vid.className = "gallery_image gallery_video";
       vid.muted = true; vid.loop = true; vid.playsInline = true;
@@ -725,8 +725,9 @@
     });
   }
 
+  // Re-measure once every image has loaded (Slater runs this after DOMContentLoaded, so no window "load" listener)
   if (document.readyState === "complete") ScrollTrigger.refresh();
-  else window.addEventListener("load", function () { ScrollTrigger.refresh(); });
+  else document.addEventListener("readystatechange", function () { if (document.readyState === "complete") ScrollTrigger.refresh(); });
   }
 
   onReady(function () {
