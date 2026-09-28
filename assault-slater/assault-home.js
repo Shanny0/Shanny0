@@ -1,4 +1,4 @@
-/* ASSAULT — Home page (English "/" and Spanish "/es")
+/* ASSAULT - Home page (English "/" and Spanish "/es")
    Countdown, FAQ, gallery, line-up schedule + mobile card stack, marquee, "The format" dial,
    scroll animations (GSAP 3.15). Loads GSAP itself, runs only on pages with the hero.
 
@@ -21,7 +21,7 @@
   }
 
   var ES = /^\/es(\/|$)/.test(location.pathname);
-  var T = ES ? {"tba":"Artista por anunciar","soon":"Próximamente","tbaShort":"Por anunciar","unlocks":"Se desbloquea en ","show":"Ver artista ","swipe":"← Desliza →"} : {"tba":"Artist to be announced","soon":"Coming soon","tbaShort":"To be announced","unlocks":"Unlocks in ","show":"Show artist ","swipe":"← Swipe →"};
+  var T = ES ? {"tba":"Artista por anunciar","soon":"Pr\u00f3ximamente","tbaShort":"Por anunciar","unlocks":"Se desbloquea en ","show":"Ver artista ","swipe":"\u2190 Desliza \u2192"} : {"tba":"Artist to be announced","soon":"Coming soon","tbaShort":"To be announced","unlocks":"Unlocks in ","show":"Show artist ","swipe":"\u2190 Swipe \u2192"};
 
   onReady(function () {
     if (!window.matchMedia('(hover: hover) and (min-width: 992px)').matches) return;
@@ -43,7 +43,7 @@
     faq.addEventListener('pointerenter', function () { faq.classList.add('is-lit'); });
   });
 
-  /* ASSAULT: "The format" dial — six hours (01:00 → 07:00) drawn on a clock face, split into four sets */
+  /* ASSAULT: "The format" dial - six hours (01:00 -> 07:00) drawn on a clock face, split into four sets */
   onReady(function () {
     var box = document.querySelector('.numbers_dial-svg');
     if (!box) return;
@@ -55,19 +55,19 @@
     svg.setAttribute('viewBox', '0 0 600 600'); svg.setAttribute('aria-hidden', 'true');
     var defs = el('defs', {}), g = el('linearGradient', { id: 'dialGrad', x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
     el('stop', { offset: 0, 'stop-color': '#b596ff' }, g); el('stop', { offset: 1, 'stop-color': '#6400fa' }, g);
-    el('circle', { class: 'dial-track', cx: C, cy: C, r: R });
+    el('circle', { "class": 'dial-track', cx: C, cy: C, r: R });
     for (var m = 0; m < 60; m++) {
       var h = m / 5, major = m % 5 === 0, a = pt(h, R + 22), b = pt(h, R + (major ? 34 : 28));
-      el('line', { class: 'dial-tick' + (major ? ' is-major' : ''), x1: a[0], y1: a[1], x2: b[0], y2: b[1] });
+      el('line', { "class": 'dial-tick' + (major ? ' is-major' : ''), x1: a[0], y1: a[1], x2: b[0], y2: b[1] });
     }
     for (var hr = 1; hr <= 12; hr++) {
-      var p = pt(hr, R + 58), t = el('text', { class: 'dial-hour' + (hr <= 7 ? ' is-on' : ''), x: p[0], y: p[1], 'text-anchor': 'middle', 'dominant-baseline': 'middle' });
+      var p = pt(hr, R + 58), t = el('text', { "class": 'dial-hour' + (hr <= 7 ? ' is-on' : ''), x: p[0], y: p[1], 'text-anchor': 'middle', 'dominant-baseline': 'middle' });
       t.textContent = (hr < 10 ? '0' : '') + hr;
     }
     var s = pt(1, R), e = pt(7, R);
-    var arc = el('path', { class: 'dial-arc', d: 'M ' + s[0] + ' ' + s[1] + ' A ' + R + ' ' + R + ' 0 0 1 ' + e[0] + ' ' + e[1] });
-    [2.5, 4, 5.5].forEach(function (q) { var a2 = pt(q, R - 12), b2 = pt(q, R + 12); el('line', { class: 'dial-cut', x1: a2[0], y1: a2[1], x2: b2[0], y2: b2[1] }); });
-    var head = el('circle', { class: 'dial-head', r: 7, cx: s[0], cy: s[1] });
+    var arc = el('path', { "class": 'dial-arc', d: 'M ' + s[0] + ' ' + s[1] + ' A ' + R + ' ' + R + ' 0 0 1 ' + e[0] + ' ' + e[1] });
+    [2.5, 4, 5.5].forEach(function (q) { var a2 = pt(q, R - 12), b2 = pt(q, R + 12); el('line', { "class": 'dial-cut', x1: a2[0], y1: a2[1], x2: b2[0], y2: b2[1] }); });
+    var head = el('circle', { "class": 'dial-head', r: 7, cx: s[0], cy: s[1] });
     box.appendChild(svg);
 
     var len = arc.getTotalLength();
@@ -128,7 +128,7 @@
     "Rav": "2099-01-01T12:00:00+01:00"
   };
   var LOCK_SVG = '<svg width="16" height="18" viewBox="0 0 16 18" fill="none" aria-hidden="true"><rect x="1" y="8" width="14" height="9" stroke="currentColor" stroke-width="1.4"/><path d="M4 8V5a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.4"/></svg>';
-  var maskName = function (name) { return name.replace(/\S/g, "▮"); };
+  var maskName = function (name) { return name.replace(/\S/g, "\u25ae"); };
   var fmtLeft = function (ms) {
     var m = Math.floor(ms / 60000), dd = Math.floor(m / 1440), hh = Math.floor(m % 1440 / 60), mm = m % 60;
     return (dd ? dd + "d " : "") + pad(hh) + "h " + pad(mm) + "m";
@@ -142,7 +142,7 @@
     if (lk) lk.remove();
     if (animate) {
       gsap.fromTo(card.querySelector(".lineup_portrait"), { filter: "blur(14px) grayscale(1) brightness(0.45)", scale: 1.15 }, { filter: "blur(0px) grayscale(0) brightness(1)", scale: 1, duration: 1.4, ease: "expo.out", clearProps: "filter,scale" });
-      if (h && canScramble) gsap.fromTo(h, { scrambleText: { text: maskName(card._realName || ""), chars: "▮" } }, { scrambleText: { text: card._realName, chars: "ASSAULT0123456789", speed: 0.6 }, duration: 1.2 });
+      if (h && canScramble) gsap.fromTo(h, { scrambleText: { text: maskName(card._realName || ""), chars: "\u25ae" } }, { scrambleText: { text: card._realName, chars: "ASSAULT0123456789", speed: 0.6 }, duration: 1.2 });
     }
   };
   var lockedCards = [];
@@ -294,7 +294,7 @@
     if (!reduce && "IntersectionObserver" in window) {
       var vio = new IntersectionObserver(function (es) {
         es.forEach(function (e) {
-          if (e.isIntersecting) { var p = e.target.play(); if (p && p.catch) p.catch(function () {}); }
+          if (e.isIntersecting) { var p = e.target.play(); if (p && p["catch"]) p["catch"](function () {}); }
           else e.target.pause();
         });
       }, { threshold: 0.25 });
@@ -557,7 +557,7 @@
       gsap.to(img, { filter: "blur(20px) grayscale(1) brightness(0.35)", duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.to(card.querySelector(".lineup_lock-icon"), { scale: 1.12, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: -1 });
       var h = card.querySelector("h3");
-      if (h && canScramble) gsap.to(h, { scrambleText: { text: h.textContent, chars: "ASSAULT▮▯01", speed: 0.4 }, duration: 1, repeat: -1, repeatDelay: 2.5 + Math.random() * 2 });
+      if (h && canScramble) gsap.to(h, { scrambleText: { text: h.textContent, chars: "ASSAULT\u25ae\u25af01", speed: 0.4 }, duration: 1, repeat: -1, repeatDelay: 2.5 + Math.random() * 2 });
       return;
     }
     if (!desktop) return;

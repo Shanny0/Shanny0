@@ -1,4 +1,4 @@
-/* ASSAULT — 3D (Three.js): electrified barbed wire + chains in the manifesto, chain ring round the line-up title.
+/* ASSAULT - 3D (Three.js): electrified barbed wire + chains in the manifesto, chain ring round the line-up title.
    Site-wide file: does nothing (and loads nothing) on pages without the manifesto section. */
 (function () {
   function onReady(fn) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn); else fn(); }
@@ -41,7 +41,7 @@
   function run(THREE) {
     var mergeGeometries = function (list) { return mergeTubes(list, THREE); };
 
-    /* ASSAULT — electrified barbed wire, 3D chains + chain ring round the line-up title (Three.js)
+    /* ASSAULT - electrified barbed wire, 3D chains + chain ring round the line-up title (Three.js)
        Snaps taut when it enters the screen, current pulses along it on the beat (140 BPM),
        barbs spark when the current passes. Click = send a charge, cursor = push + light. */
     (function () {
@@ -371,7 +371,7 @@
 
 
       /* =====================================================================
-         3D CHAINS behind the manifesto — same violet chrome, same current
+         3D CHAINS behind the manifesto - same violet chrome, same current
          ===================================================================== */
       var chainVisible = false, chainTick = null;
       (function () {
@@ -495,7 +495,7 @@
               Y.crossVectors(T, Zup);
               if (Y.lengthSq() < 1e-4) Y.crossVectors(T, Yup);
               Y.normalize(); Z.crossVectors(T, Y);
-              // links alternate 90°, with a slow roll along the chain
+              // links alternate 90 deg, with a slow roll along the chain
               var th = (i % 2 ? Math.PI / 2 : 0) + Math.sin(t * 0.6 + i * 0.25 + c.seed) * 0.25;
               Yr.copy(Y).multiplyScalar(Math.cos(th)).addScaledVector(Z, Math.sin(th));
               Zr.crossVectors(T, Yr);
@@ -514,7 +514,7 @@
       })();
 
       /* =====================================================================
-         3D CHAIN RING around the LINE-UP title — the back half renders behind
+         3D CHAIN RING around the LINE-UP title - the back half renders behind
          the title, the front half in front of it (two canvases, one scene)
          ===================================================================== */
       var ringVisible = false, ringTick = null;
@@ -589,7 +589,7 @@
           var m4 = new THREE.Matrix4(), T = new THREE.Vector3(), P = new THREE.Vector3(), Y = new THREE.Vector3(), Z = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), Yr = new THREE.Vector3(), Zr = new THREE.Vector3(), S = new THREE.Vector3();
           for (var i = 0; i < N; i++) {
             var a = (i / N) * Math.PI * 2;
-            P.set(Math.cos(a) * R, 0, Math.sin(a) * R);            // ring lies flat in XZ…
+            P.set(Math.cos(a) * R, 0, Math.sin(a) * R);            // ring lies flat in XZ...
             T.set(-Math.sin(a), 0, Math.cos(a));
             Y.copy(P).normalize(); Z.crossVectors(T, Y);
             var th = i % 2 ? Math.PI / 2 : 0;
@@ -604,7 +604,7 @@
         build();
         if ("ResizeObserver" in window) new ResizeObserver(build).observe(stage); else window.addEventListener("resize", build);
 
-        // …then tipped towards the camera so it reads as an ellipse, tilted like the old ring
+        // ...then tipped towards the camera so it reads as an ellipse, tilted like the old ring
         var baseRotZ = THREE.MathUtils.degToRad(-6.3), scrollRot = 0, tiltX = 0, tiltY = 0, tx = 0, ty = 0;
         group.rotation.set(TILT, 0, baseRotZ);
         if (window.gsap && window.ScrollTrigger && !reduce) {
@@ -783,7 +783,7 @@
     // Three.js is only published as an ES module: load it with import(), wrapped so Slater's minifier accepts it.
     // Minified bundle first; if the CDN can't serve it, fall back to the plain build.
     var importModule = new Function("url", "return import(url)");
-    var three = importModule(THREE_CDN + "+esm").catch(function () { return importModule(THREE_CDN + "build/three.module.js"); });
+    var three = importModule(THREE_CDN + "+esm")["catch"](function () { return importModule(THREE_CDN + "build/three.module.js"); });
     Promise.all([three, loadGsap().then(function () { gsap.registerPlugin(ScrollTrigger); }, function () {})])
       .then(function (r) { run(r[0]); });
   });
