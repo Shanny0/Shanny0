@@ -8,6 +8,9 @@
   var HOME = /^\/(es\/?)?$/.test(location.pathname);
   // Phone light mode is off: phones get the full animations too (restore the matchMedia check to turn it back on)
   var LITE = false;
+  // Phones keep every animation, but the effects that make scrolling stutter there are lightened:
+  // still grain without blending, no animated blur filters, no gallery parallax, no marquee speed-up.
+  var PHONE = window.matchMedia("(max-width: 767px)").matches;
   function onReady(fn) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn); else fn(); }
   function loadGsap() {
     if (window.assaultGsap) return window.assaultGsap;
@@ -24,7 +27,10 @@
     return (window.assaultGsap = load("gsap.min").then(function () {
       return Promise.all(plugins.map(load));
     }).then(function () {
-      if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+      if (!window.ScrollTrigger) return;
+      gsap.registerPlugin(ScrollTrigger);
+      // the phone address bar showing/hiding must not recalculate every animation mid-scroll
+      ScrollTrigger.config({ ignoreMobileResize: true });
     }));
   }
   // Start downloading GSAP straight away on the Home pages (the 3D script in the site footer waits for it too)
@@ -362,7 +368,8 @@
     var grain = d.createElement("div");
     grain.className = "page_grain";
     d.body.appendChild(grain);
-    gsap.to(grain, { x: "random(-8, 8, 1)%", y: "random(-8, 8, 1)%", duration: 0.12, ease: "steps(1)", repeat: -1, repeatRefresh: true });
+    if (PHONE) grain.classList.add("is-still"); // phones: still grain, no blending
+    else gsap.to(grain, { x: "random(-8, 8, 1)%", y: "random(-8, 8, 1)%", duration: 0.12, ease: "steps(1)", repeat: -1, repeatRefresh: true });
   }
 
   if (desktop) {
@@ -446,13 +453,13 @@
   if (fade && window.SplitText) {
     var split = SplitText.create(fade, { type: "words" });
     gsap.set(fade, { color: "#eeeeee" });
-    gsap.fromTo(split.words, { opacity: 0.1, filter: "blur(4px)" }, {
-      opacity: 1, filter: "blur(0px)", stagger: 0.1, ease: "none",
+    gsap.fromTo(split.words, PHONE ? { opacity: 0.1 } : { opacity: 0.1, filter: "blur(4px)" }, {
+      opacity: 1, filter: PHONE ? "none" : "blur(0px)", stagger: 0.1, ease: "none",
       scrollTrigger: { trigger: ".manifesto_lead", start: "top 75%", end: "bottom 40%", scrub: true }
     });
   } else if (fade) fade.style.color = "#eeeeee"; // phones: final colour, no word-by-word fade
   reveal(".manifesto_head .eyebrow_component", ".manifesto_head", { y: 16 });
-  $$(".manifesto_paragraph").forEach(function (el) { reveal(el, el, LITE ? { y: 30 } : { y: 30, filter: "blur(6px)", clearProps: "filter" }); });
+  $$(".manifesto_paragraph").forEach(function (el) { reveal(el, el, LITE || PHONE ? { y: 30 } : { y: 30, filter: "blur(6px)", clearProps: "filter" }); });
   // The chant flickers on like failing neon
   $$(".manifesto_chant").forEach(function (el) {
     gsap.fromTo(el, { autoAlpha: 0 }, { keyframes: { autoAlpha: [0, 1, 0.2, 1, 0.4, 0.1, 1] }, duration: 1.2, ease: "none", scrollTrigger: { trigger: el, start: "top 80%", once: true } });
@@ -467,7 +474,7 @@
     gsap.set(bgText, { xPercent: -50, yPercent: -50, x: 0, y: 0 });
     if (window.SplitText) {
       var bgSplit = SplitText.create(bgText, { type: "chars" });
-      gsap.from(bgSplit.chars, { autoAlpha: 0, yPercent: 60, filter: "blur(30px)", stagger: { each: 0.06, from: "random" }, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: ".lineup_title-stage", start: "top 80%", once: true } });
+      gsap.from(bgSplit.chars, { autoAlpha: 0, yPercent: 60, filter: PHONE ? "none" : "blur(30px)", stagger: { each: 0.06, from: "random" }, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: ".lineup_title-stage", start: "top 80%", once: true } });
     }
     scrub(bgText, { scale: 1.15 }, { scale: 0.92 }, ".lineup_title-stage");
   }
@@ -574,7 +581,7 @@
     if (card.classList.contains("is-locked")) {
       if (LITE) return; // phones: the locked card stays still (animated blur is heavy)
       // Locked: the blur breathes, the icon pulses, the name keeps encrypting
-      gsap.to(img, { filter: "blur(20px) grayscale(1) brightness(0.35)", duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
+      if (!PHONE) gsap.to(img, { filter: "blur(20px) grayscale(1) brightness(0.35)", duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.to(card.querySelector(".lineup_lock-icon"), { scale: 1.12, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: -1 });
       var h = card.querySelector("h3");
       if (h && canScramble) gsap.to(h, { scrambleText: { text: h.textContent, chars: "ASSAULT\u25ae\u25af01", speed: 0.4 }, duration: 1, repeat: -1, repeatDelay: 2.5 + Math.random() * 2 });
@@ -588,7 +595,7 @@
   });
 
   /* ---------- Numbers ---------- */
-  if (marquee && !LITE) {
+  if (marquee && !LITE && !PHONE) {
     ScrollTrigger.create({
       trigger: ".section_numbers", start: "top bottom", end: "bottom top",
       onUpdate: function (self) {
@@ -699,9 +706,9 @@
   scrub(".gallery_heading", { xPercent: 8 }, { xPercent: -12 }, ".section_gallery");
   reveal(".gallery_top-bar > *", ".gallery_top-bar", { y: 16 });
   gsap.from(".gallery_item", { autoAlpha: 0, x: 140, rotation: 3, stagger: 0.08, duration: 1.2, ease: "expo.out", scrollTrigger: { trigger: ".gallery_slider", start: "top 85%", once: true } });
-  var gImgs = LITE ? [] : $$(".gallery_image"); // phones: no parallax inside the cards
+  var gImgs = LITE || PHONE ? [] : $$(".gallery_image"); // phones: no parallax inside the cards
   if (gImgs.length) gsap.set(gImgs, { scale: 1.2 });
-  if (!LITE) galleryParallax = function () {
+  if (!LITE && !PHONE) galleryParallax = function () {
     if (!s) return;
     var mid = s.getBoundingClientRect().left + s.clientWidth / 2;
     gImgs.forEach(function (img) {
