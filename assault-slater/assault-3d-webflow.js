@@ -1,10 +1,10 @@
-// Phones: no 3D (the still barbed-wire and ring images show instead).
-// Desktop: Three.js is only downloaded when the manifesto comes within 600px of the screen.
+// Three.js is only downloaded when the manifesto comes close to the screen
+// (600px on desktop, 200px on phones so it stays out of the first load).
 var section3d = document.querySelector(".section_manifesto");
-if (section3d && !window.matchMedia("(max-width: 767px)").matches) {
+if (section3d) {
   await new Promise(function (go) {
     if (!("IntersectionObserver" in window)) return go();
-    var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: "600px 0px" });
+    var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: window.matchMedia("(max-width: 767px)").matches ? "200px 0px" : "600px 0px" });
     io.observe(section3d);
   });
   if (window.assaultGsap) { try { await window.assaultGsap; } catch (e) {} }
