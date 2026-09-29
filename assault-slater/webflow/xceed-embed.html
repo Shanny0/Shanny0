@@ -3,30 +3,48 @@
 // Xceed ticket widget: load it only when the tickets section gets close, so it does not slow the first load
 (function () {
   var box = document.getElementById("xceed-widget"), done = false;
-  // While the widget starts up it scrolls the page to itself: for 10 s, undo scrolls the visitor did not make.
-  // A sudden jump of 400px+ is undone unless a key or link started it; a slower drift is undone when the visitor
-  // is not touching the page (2.5 s allowed for finger-swipe momentum, 0.5 s after wheel or keys).
+  // When the widget starts up it scrolls the page down to itself. For 10 s after loading it:
+  // 1) the widget cannot take focus until it is on screen (focus makes the browser scroll to it),
+  // 2) page-scroll calls that would move the page by 400px+ are ignored (unless a key or link tap started them),
+  // 3) as a last resort, a jump that still happens is undone.
   function holdScroll() {
-    var y = window.scrollY, until = Date.now() + 10000, lastTouch = 0, lastWheel = Date.now(), lastKey = 0, lastClick = 0;
-    var marks = {
-      touchstart: function () { lastTouch = Date.now(); }, touchmove: function () { lastTouch = Date.now(); },
-      wheel: function () { lastWheel = Date.now(); }, pointerdown: function () { lastWheel = Date.now(); },
-      keydown: function () { lastKey = Date.now(); }, click: function () { lastClick = Date.now(); }
+    var W = window, P = Element.prototype, H = HTMLElement.prototype, until = Date.now() + 10000, lastKey = 0, lastClick = 0;
+    var orig = { to: W.scrollTo, by: W.scrollBy, sc: W.scroll, into: P.scrollIntoView, focus: H.focus };
+    function onKey() { lastKey = Date.now(); }
+    function onClick() { lastClick = Date.now(); }
+    function guarding() { var n = Date.now(); return n < until && n - lastKey > 1000 && n - lastClick > 1500; }
+    function far(y) { return Math.abs(y - W.scrollY) > 400; }
+    function toY(a, b) { return a && typeof a === "object" ? (a.top != null ? a.top : W.scrollY) : (b != null ? b : W.scrollY); }
+    W.scrollTo = function (a, b) { if (guarding() && far(toY(a, b))) return; return orig.to.apply(W, arguments); };
+    W.scroll = function (a, b) { if (guarding() && far(toY(a, b))) return; return orig.sc.apply(W, arguments); };
+    W.scrollBy = function (a, b) {
+      var dy = a && typeof a === "object" ? (a.top || 0) : (b || 0);
+      if (guarding() && Math.abs(dy) > 400) return; return orig.by.apply(W, arguments);
     };
-    function onScroll() {
-      var now = Date.now(), d = window.scrollY - y;
-      if (now > until) {
-        window.removeEventListener("scroll", onScroll);
-        for (var ev in marks) window.removeEventListener(ev, marks[ev], true);
-        return;
-      }
-      var byLink = now - lastKey < 1000 || now - lastClick < 1500;
-      var idle = !byLink && now - lastTouch > 2500 && now - lastWheel > 500;
-      if ((Math.abs(d) > 400 && !byLink) || (idle && Math.abs(d) > 150)) window.scrollTo(0, y);
-      else if (!idle) y = window.scrollY;
+    P.scrollIntoView = function () {
+      if (guarding() && Math.abs(this.getBoundingClientRect().top) > 400) return; return orig.into.apply(this, arguments);
+    };
+    H.focus = function () {
+      if (guarding() && box.contains(this)) return orig.focus.call(this, { preventScroll: true }); return orig.focus.apply(this, arguments);
+    };
+    // no focus inside the widget until it is actually on screen
+    if ("inert" in box && "IntersectionObserver" in W) {
+      box.inert = true;
+      var seen = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { seen.disconnect(); box.inert = false; } });
+      seen.observe(box);
     }
-    for (var ev in marks) window.addEventListener(ev, marks[ev], { passive: true, capture: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
+    // last resort: undo a sudden 400px+ jump the visitor did not start
+    var y = W.scrollY;
+    function onScroll() { if (guarding() && far(y) && Math.abs(W.scrollY - y) > 400) orig.to.call(W, 0, y); else y = W.scrollY; }
+    W.addEventListener("keydown", onKey, true);
+    W.addEventListener("click", onClick, true);
+    W.addEventListener("scroll", onScroll, { passive: true });
+    setTimeout(function () {
+      W.scrollTo = orig.to; W.scrollBy = orig.by; W.scroll = orig.sc; P.scrollIntoView = orig.into; H.focus = orig.focus;
+      W.removeEventListener("keydown", onKey, true);
+      W.removeEventListener("click", onClick, true);
+      W.removeEventListener("scroll", onScroll);
+    }, 10000);
   }
   function load() {
     if (done) return;
