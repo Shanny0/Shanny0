@@ -1,0 +1,19 @@
+<div id="xceed-widget"></div>
+<script>
+// Xceed ticket widget: load it only when the tickets section gets close, so it does not slow the first load
+(function () {
+  var box = document.getElementById("xceed-widget"), done = false;
+  function load() {
+    if (done) return;
+    done = true;
+    var s = document.createElement("script");
+    s.src = "https://widget.xceed.me/v2/loader.js";
+    document.body.appendChild(s);
+  }
+  if (!box || !("IntersectionObserver" in window)) return load();
+  var io = new IntersectionObserver(function (e) {
+    if (e[0].isIntersecting) { io.disconnect(); load(); }
+  }, { rootMargin: "1500px 0px" });
+  io.observe(box);
+})();
+</script>
