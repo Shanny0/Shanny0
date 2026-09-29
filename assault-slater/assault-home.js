@@ -1,24 +1,33 @@
-/* ASSAULT - Home page (English "/" and Spanish "/es")
+/* ASSAULT - Home page (English "/" and Spanish "/es"), loaded once in the site head for both languages.
    Countdown, FAQ, gallery, line-up schedule + mobile card stack, marquee, "The format" dial,
-   scroll animations (GSAP 3.15). Loads GSAP itself, runs only on pages with the hero.
+   scroll animations (GSAP 3.15). Loads GSAP itself, and only on the Home pages.
+   Phones (LITE) get a light version: no intro, no looping/scroll-linked effects, no film grain.
 
    LINE-UP SCHEDULE: search for LINEUP_SCHEDULE below to change the reveal dates. */
 (function () {
+  var HOME = /^\/(es\/?)?$/.test(location.pathname);
+  var LITE = window.matchMedia("(max-width: 767px)").matches;
   function onReady(fn) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn); else fn(); }
   function loadGsap() {
     if (window.assaultGsap) return window.assaultGsap;
     var cdn = "https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/";
     var load = function (name) {
-      return window[name === "gsap.min" ? "gsap" : name] ? Promise.resolve() : new Promise(function (ok, fail) {
+      return window[name.replace(".min", "")] ? Promise.resolve() : new Promise(function (ok, fail) {
         var s = document.createElement("script");
         s.src = cdn + name + ".js"; s.onload = ok; s.onerror = fail;
         document.head.appendChild(s);
       });
     };
+    // Phones skip the text-splitting and scramble plugins (their effects are off there)
+    var plugins = LITE ? ["ScrollTrigger.min"] : ["ScrollTrigger.min", "SplitText.min", "ScrambleTextPlugin.min"];
     return (window.assaultGsap = load("gsap.min").then(function () {
-      return Promise.all(["ScrollTrigger.min", "SplitText.min", "ScrambleTextPlugin.min"].map(load));
+      return Promise.all(plugins.map(load));
+    }).then(function () {
+      if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
     }));
   }
+  // Start downloading GSAP straight away on the Home pages (the 3D script in the site footer waits for it too)
+  if (HOME) loadGsap();
 
   var ES = /^\/es(\/|$)/.test(location.pathname);
   var T = ES ? {"tba":"Artista por anunciar","soon":"Pr\u00f3ximamente","tbaShort":"Por anunciar","unlocks":"Se desbloquea en ","show":"Ver artista ","swipe":"\u2190 Desliza \u2192"} : {"tba":"Artist to be announced","soon":"Coming soon","tbaShort":"To be announced","unlocks":"Unlocks in ","show":"Show artist ","swipe":"\u2190 Swipe \u2192"};
@@ -327,6 +336,7 @@
     }, vars || {}));
   };
   var scrub = function (el, fromVars, toVars, trigger, start, end) {
+    if (LITE) return; // phones: no scroll-linked parallax
     if (typeof el === "string" ? !$(el) : !el) return;
     gsap.fromTo(el, fromVars, Object.assign({ ease: "none", scrollTrigger: { trigger: trigger || el, start: start || "top bottom", end: end || "bottom top", scrub: true } }, toVars));
   };
@@ -346,10 +356,13 @@
   };
 
   /* ---------- Global: film grain + cursor + magnetic buttons ---------- */
-  var grain = d.createElement("div");
-  grain.className = "page_grain";
-  d.body.appendChild(grain);
-  gsap.to(grain, { x: "random(-8, 8, 1)%", y: "random(-8, 8, 1)%", duration: 0.12, ease: "steps(1)", repeat: -1, repeatRefresh: true });
+  // Film grain: a full-screen blended layer redrawn 8x a second - desktop only
+  if (!LITE) {
+    var grain = d.createElement("div");
+    grain.className = "page_grain";
+    d.body.appendChild(grain);
+    gsap.to(grain, { x: "random(-8, 8, 1)%", y: "random(-8, 8, 1)%", duration: 0.12, ease: "steps(1)", repeat: -1, repeatRefresh: true });
+  }
 
   if (desktop) {
     var dot = d.createElement("div"), ring = d.createElement("div");
@@ -371,6 +384,10 @@
 
   /* ---------- HERO: the gates open ---------- */
   if ($(".hero_symbol")) gsap.set(".hero_symbol", { xPercent: -50, x: 0 });
+  if (LITE) {
+    // Phones: the hero shows straight away (no intro, no pinned hero)
+    ready();
+  } else {
   var bg = $(".hero_background");
   var flash = d.createElement("div");
   flash.className = "hero_flash";
@@ -400,6 +417,7 @@
   gsap.to(".hero_wall.is-right", { xPercent: 35, ease: "none", scrollTrigger: heroST() });
   gsap.to(".hero_content", { scale: 0.88, autoAlpha: 0.15, ease: "none", scrollTrigger: heroST() });
   gsap.to(".hero_symbol", { rotation: 30, scale: 1.2, ease: "none", scrollTrigger: heroST() });
+  }
 
   /* ---------- Countdown: slot-machine numbers ---------- */
   wipeUp(".countdown_title-wrap .heading-style-h2");
@@ -419,7 +437,7 @@
   }
 
   /* ---------- Manifesto ---------- */
-  if ($(".manifesto_wire")) gsap.fromTo(".manifesto_wire", { clipPath: "inset(0% 100% 0% 0%)" }, {
+  if ($(".manifesto_wire") && !LITE) gsap.fromTo(".manifesto_wire", { clipPath: "inset(0% 100% 0% 0%)" }, {
     clipPath: "inset(0% 0% 0% 0%)", ease: "none",
     scrollTrigger: { trigger: ".section_manifesto", start: "top 95%", end: "top 35%", scrub: 1 }
   });
@@ -431,9 +449,9 @@
       opacity: 1, filter: "blur(0px)", stagger: 0.1, ease: "none",
       scrollTrigger: { trigger: ".manifesto_lead", start: "top 75%", end: "bottom 40%", scrub: true }
     });
-  }
+  } else if (fade) fade.style.color = "#eeeeee"; // phones: final colour, no word-by-word fade
   reveal(".manifesto_head .eyebrow_component", ".manifesto_head", { y: 16 });
-  $$(".manifesto_paragraph").forEach(function (el) { reveal(el, el, { y: 30, filter: "blur(6px)", clearProps: "filter" }); });
+  $$(".manifesto_paragraph").forEach(function (el) { reveal(el, el, LITE ? { y: 30 } : { y: 30, filter: "blur(6px)", clearProps: "filter" }); });
   // The chant flickers on like failing neon
   $$(".manifesto_chant").forEach(function (el) {
     gsap.fromTo(el, { autoAlpha: 0 }, { keyframes: { autoAlpha: [0, 1, 0.2, 1, 0.4, 0.1, 1] }, duration: 1.2, ease: "none", scrollTrigger: { trigger: el, start: "top 80%", once: true } });
@@ -553,6 +571,7 @@
     var w = card.querySelector(".lineup_portrait-wrap"), img = card.querySelector(".lineup_portrait");
     if (!w || !img) return;
     if (card.classList.contains("is-locked")) {
+      if (LITE) return; // phones: the locked card stays still (animated blur is heavy)
       // Locked: the blur breathes, the icon pulses, the name keeps encrypting
       gsap.to(img, { filter: "blur(20px) grayscale(1) brightness(0.35)", duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.to(card.querySelector(".lineup_lock-icon"), { scale: 1.12, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: -1 });
@@ -568,7 +587,7 @@
   });
 
   /* ---------- Numbers ---------- */
-  if (marquee) {
+  if (marquee && !LITE) {
     ScrollTrigger.create({
       trigger: ".section_numbers", start: "top bottom", end: "bottom top",
       onUpdate: function (self) {
@@ -582,7 +601,7 @@
   scrub(".numbers_frame-wrap", { yPercent: 10 }, { yPercent: -10 }, ".section_numbers");
   if ($(".numbers_frame")) {
     gsap.from(".numbers_frame", { autoAlpha: 0, scale: 0.85, rotation: -12, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: ".numbers_frame-wrap", start: "top 80%", once: true } });
-    gsap.fromTo(".numbers_frame", { y: 14, rotation: 2.5 }, { y: -14, rotation: 5.5, duration: 3.4, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.4 });
+    if (!LITE) gsap.fromTo(".numbers_frame", { y: 14, rotation: 2.5 }, { y: -14, rotation: 5.5, duration: 3.4, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.4 });
   }
   if ($(".numbers_photo")) scrub(".numbers_photo", { scale: 1.25, yPercent: -6 }, { scale: 1.05, yPercent: 6 }, ".section_numbers");
   $$(".numbers_value").forEach(function (el) {
@@ -607,7 +626,7 @@
       scrollTrigger: { trigger: ".tickets_visual", start: "top 85%", once: true }
     });
     var vis2 = $(".tickets_visual"), timg = $(".tickets_image");
-    if (vis2) gsap.to(vis2, { y: -10, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.6 });
+    if (vis2 && !LITE) gsap.to(vis2, { y: -10, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.6 });
     if (desktop && vis2 && timg) {
       // 3D tilt + moving glare (masked to the ticket shape) + counter-shifting shadow
       gsap.set(vis2, { transformPerspective: 1000, transformStyle: "preserve-3d" });
@@ -649,7 +668,7 @@
     var tvStub = $(".ticket-v_stub");
     if (tvStub) gsap.fromTo(tvStub, { y: 0, rotation: 0 }, { y: 10, rotation: 2.5, transformOrigin: "0% 0%", duration: 0.35, ease: "power2.out", yoyo: true, repeat: 1, delay: 0.2, scrollTrigger: { trigger: tvStub, start: "top 75%", once: true } });
     // Holographic shine sweeping across the main part
-    if (tvMain) {
+    if (tvMain && !LITE) {
       var shine = d.createElement("div");
       shine.className = "ticket-v_shine";
       tvMain.appendChild(shine);
@@ -679,9 +698,9 @@
   scrub(".gallery_heading", { xPercent: 8 }, { xPercent: -12 }, ".section_gallery");
   reveal(".gallery_top-bar > *", ".gallery_top-bar", { y: 16 });
   gsap.from(".gallery_item", { autoAlpha: 0, x: 140, rotation: 3, stagger: 0.08, duration: 1.2, ease: "expo.out", scrollTrigger: { trigger: ".gallery_slider", start: "top 85%", once: true } });
-  var gImgs = $$(".gallery_image");
-  gsap.set(gImgs, { scale: 1.2 });
-  galleryParallax = function () {
+  var gImgs = LITE ? [] : $$(".gallery_image"); // phones: no parallax inside the cards
+  if (gImgs.length) gsap.set(gImgs, { scale: 1.2 });
+  if (!LITE) galleryParallax = function () {
     if (!s) return;
     var mid = s.getBoundingClientRect().left + s.clientWidth / 2;
     gImgs.forEach(function (img) {
@@ -710,7 +729,7 @@
     gsap.fromTo(glow, { autoAlpha: 0, scale: 0.7 }, {
       autoAlpha: 1, scale: 1, duration: 2.2, ease: "expo.out",
       scrollTrigger: { trigger: ".footer_component", start: "top 75%", once: true },
-      onComplete: function () { gsap.to(glow, { opacity: 0.6, scale: 1.08, duration: 3.2, ease: "sine.inOut", yoyo: true, repeat: -1 }); }
+      onComplete: function () { if (!LITE) gsap.to(glow, { opacity: 0.6, scale: 1.08, duration: 3.2, ease: "sine.inOut", yoyo: true, repeat: -1 }); }
     });
   }
   var foot = $(".footer_component");
@@ -730,8 +749,54 @@
   else document.addEventListener("readystatechange", function () { if (document.readyState === "complete") ScrollTrigger.refresh(); });
   }
 
+  /* Gallery videos: they only download and play when the gallery is on screen (Webflow would otherwise
+     fetch all six at page load). The card keeps its poster until then.
+     The videos are caught while the page is still being read, before the browser picks their file. */
+  if (HOME && "MutationObserver" in window && "IntersectionObserver" in window) {
+    var held = [];
+    var holdSource = function (s) {
+      if (s.getAttribute("src")) { s.setAttribute("data-held-src", s.getAttribute("src")); s.removeAttribute("src"); }
+    };
+    var holdVideo = function (v) {
+      if (v._held || !v.closest || !v.closest(".gallery_image-wrap")) return;
+      v._held = true; held.push(v);
+      v.removeAttribute("autoplay"); v.autoplay = false; v.preload = "none";
+      [].slice.call(v.querySelectorAll("source")).forEach(holdSource);
+    };
+    var watch = new MutationObserver(function (records) {
+      records.forEach(function (r) {
+        [].slice.call(r.addedNodes).forEach(function (n) {
+          if (n.nodeName === "VIDEO") holdVideo(n);
+          else if (n.nodeName === "SOURCE") { if (n.parentNode && n.parentNode._held) holdSource(n); }
+          else if (n.querySelectorAll) [].slice.call(n.querySelectorAll("video")).forEach(holdVideo);
+        });
+      });
+    });
+    watch.observe(document.documentElement, { childList: true, subtree: true });
+    onReady(function () {
+      watch.disconnect();
+      [].slice.call(document.querySelectorAll(".gallery_image-wrap video")).forEach(function (v) {
+        if (!v._held) { holdVideo(v); v.load(); } // missed while loading: stop its download now
+      });
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var v = e.target;
+          if (e.isIntersecting) {
+            if (!v._loaded) {
+              v._loaded = true;
+              [].slice.call(v.querySelectorAll("source[data-held-src]")).forEach(function (s) { s.setAttribute("src", s.getAttribute("data-held-src")); });
+              v.load();
+            }
+            var p = v.play(); if (p && p["catch"]) p["catch"](function () {});
+          } else v.pause();
+        });
+      }, { rootMargin: "200px" });
+      held.forEach(function (v) { io.observe(v); });
+    });
+  }
+
   onReady(function () {
-    if (!document.querySelector(".section_hero")) return;
+    if (!HOME || !document.querySelector(".section_hero")) return;
     loadGsap().then(main, main);
   });
 })();
