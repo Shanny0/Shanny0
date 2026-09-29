@@ -3,9 +3,35 @@
 // Xceed ticket widget: load it only when the tickets section gets close, so it does not slow the first load
 (function () {
   var box = document.getElementById("xceed-widget"), done = false;
+  // While the widget starts up it scrolls the page to itself: for 10 s, undo scrolls the visitor did not make.
+  // A sudden jump of 400px+ is undone unless a key or link started it; a slower drift is undone when the visitor
+  // is not touching the page (2.5 s allowed for finger-swipe momentum, 0.5 s after wheel or keys).
+  function holdScroll() {
+    var y = window.scrollY, until = Date.now() + 10000, lastTouch = 0, lastWheel = Date.now(), lastKey = 0, lastClick = 0;
+    var marks = {
+      touchstart: function () { lastTouch = Date.now(); }, touchmove: function () { lastTouch = Date.now(); },
+      wheel: function () { lastWheel = Date.now(); }, pointerdown: function () { lastWheel = Date.now(); },
+      keydown: function () { lastKey = Date.now(); }, click: function () { lastClick = Date.now(); }
+    };
+    function onScroll() {
+      var now = Date.now(), d = window.scrollY - y;
+      if (now > until) {
+        window.removeEventListener("scroll", onScroll);
+        for (var ev in marks) window.removeEventListener(ev, marks[ev], true);
+        return;
+      }
+      var byLink = now - lastKey < 1000 || now - lastClick < 1500;
+      var idle = !byLink && now - lastTouch > 2500 && now - lastWheel > 500;
+      if ((Math.abs(d) > 400 && !byLink) || (idle && Math.abs(d) > 150)) window.scrollTo(0, y);
+      else if (!idle) y = window.scrollY;
+    }
+    for (var ev in marks) window.addEventListener(ev, marks[ev], { passive: true, capture: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
   function load() {
     if (done) return;
     done = true;
+    holdScroll();
     var s = document.createElement("script");
     s.src = "https://widget.xceed.me/v2/loader.js";
     document.body.appendChild(s);
