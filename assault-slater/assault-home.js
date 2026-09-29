@@ -6,7 +6,8 @@
    LINE-UP SCHEDULE: search for LINEUP_SCHEDULE below to change the reveal dates. */
 (function () {
   var HOME = /^\/(es\/?)?$/.test(location.pathname);
-  var LITE = window.matchMedia("(max-width: 767px)").matches;
+  // Phone light mode is off: phones get the full animations too (restore the matchMedia check to turn it back on)
+  var LITE = false;
   function onReady(fn) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn); else fn(); }
   function loadGsap() {
     if (window.assaultGsap) return window.assaultGsap;
