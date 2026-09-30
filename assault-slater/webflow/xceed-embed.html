@@ -46,9 +46,28 @@
       W.removeEventListener("scroll", onScroll);
     }, 10000);
   }
+  // The widget reads its own page from the URL after "#" (#/events...). The site's in-page links (#tickets, #line-up,
+  // #faq) also write there, and the widget then shows its 404 page: keep those links out of the URL.
+  function clearHash() {
+    if (location.hash && !/^#\//.test(location.hash)) history.replaceState(history.state, "", location.pathname + location.search);
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a[href*=\"#\"]");
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var url = new URL(a.getAttribute("href"), location.href);
+    if (url.pathname !== location.pathname || url.hash.length < 2 || /^#\//.test(url.hash)) return;
+    var target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+    if (!target) return;
+    e.preventDefault();
+    var nav = document.querySelector(".nav_component");
+    var off = nav && /fixed|sticky/.test(getComputedStyle(nav).position) ? nav.offsetHeight : 0;
+    (document.scrollingElement || document.documentElement).scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - off, behavior: "smooth" });
+    setTimeout(clearHash, 0); // in case another link handler still wrote the hash
+  }, true);
   function load() {
     if (done) return;
     done = true;
+    clearHash();
     holdScroll();
     var s = document.createElement("script");
     s.src = "https://widget.xceed.me/v2/loader.js";
